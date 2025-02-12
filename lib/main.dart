@@ -32,7 +32,7 @@ class HeartBeatScreen extends StatefulWidget {
 class _HeartBeatScreenState extends State<HeartBeatScreen>
     with SingleTickerProviderStateMixin {
   bool _isExpanded = false;
-  int _seconds = 30;
+  int _seconds = 8; // Set animation duration to 8 seconds
   Timer? _timer;
   bool _animationStarted = false;
   String _partnerName = "";
@@ -49,7 +49,7 @@ class _HeartBeatScreenState extends State<HeartBeatScreen>
 
     setState(() {
       _animationStarted = true;
-      _seconds = 30;
+      _seconds = 8; // Reset timer to 8 seconds
     });
 
     _startHeartbeat();
@@ -58,7 +58,7 @@ class _HeartBeatScreenState extends State<HeartBeatScreen>
 
   void _startHeartbeat() {
     Timer.periodic(const Duration(milliseconds: 800), (timer) {
-      if (!mounted) {
+      if (!mounted || !_animationStarted) {
         timer.cancel();
       } else {
         setState(() {
@@ -69,15 +69,25 @@ class _HeartBeatScreenState extends State<HeartBeatScreen>
   }
 
   void _startTimer() {
-    _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
+    _timer = Timer.periodic(const Duration(seconds: 2), (timer) {
       if (!mounted || _seconds <= 0) {
         timer.cancel();
+        _resetToStartScreen(); // Reset screen after animation ends
       } else {
         setState(() {
           _seconds--;
           _currentMessageIndex = (_currentMessageIndex + 1) % _messages.length;
         });
       }
+    });
+  }
+
+  void _resetToStartScreen() {
+    setState(() {
+      _animationStarted = false;
+      _isExpanded = false;
+      _partnerName = "";
+      _nameController.clear();
     });
   }
 
@@ -113,12 +123,16 @@ class _HeartBeatScreenState extends State<HeartBeatScreen>
                     ),
                   ),
                   const SizedBox(height: 30),
-                  Text(
-                    "${_messages[_currentMessageIndex]} ${_partnerName.isNotEmpty ? _partnerName : ''}",
-                    style: const TextStyle(
-                      fontSize: 24,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.red,
+                  AnimatedSwitcher(
+                    duration: const Duration(milliseconds: 300), // Fast transition
+                    child: Text(
+                      "${_messages[_currentMessageIndex]} ${_partnerName.isNotEmpty ? _partnerName : ''}",
+                      key: ValueKey<int>(_currentMessageIndex),
+                      style: const TextStyle(
+                        fontSize: 24,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.red,
+                      ),
                     ),
                   ),
                 ],
