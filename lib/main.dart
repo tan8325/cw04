@@ -1,3 +1,4 @@
+//Students: Tan Bach & Felix Garcia
 import 'dart:async';
 import 'package:flutter/material.dart';
 
@@ -124,7 +125,7 @@ class _HeartBeatScreenState extends State<HeartBeatScreen>
                   ),
                   const SizedBox(height: 30),
                   AnimatedSwitcher(
-                    duration: const Duration(milliseconds: 300), // Fast transition
+                    duration: const Duration(milliseconds: 300),
                     child: Text(
                       "${_messages[_currentMessageIndex]} ${_partnerName.isNotEmpty ? _partnerName : ''}",
                       key: ValueKey<int>(_currentMessageIndex),
